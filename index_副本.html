@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 时代的商业化：广告产品经理的进阶之路</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- 1. 核心视觉变量 --- */
+        :root {
+            --bg-deep: #0b1120;       /* 深空蓝黑 */
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border-glass: 1px solid rgba(56, 189, 248, 0.1);
+            
+            --color-primary: #06b6d4; /* 青色 (Cyber Cyan) */
+            --color-secondary: #f472b6; /* 粉色 (Neon Pink) */
+            --color-accent: #8b5cf6;  /* 紫色 (Electric Purple) */
+            --color-text: #e2e8f0;
+            --color-mute: #64748b;
+            
+            --shadow-glow: 0 0 15px rgba(6, 182, 212, 0.15);
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--color-text);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 动态背景：数据流 */
+        #matrix-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+        }
+
+        /* --- 2. 布局框架 --- */
+        .dashboard-container {
+            width: 95%;
+            max-width: 1300px;
+            margin: 30px auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 头部 */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            background: linear-gradient(90deg, #fff, var(--color-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .header-meta {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--color-mute);
+        }
+        
+        .role-tag {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--color-primary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* --- 3. 导航 Tabs (拟物开关风格) --- */
+        .nav-control {
+            display: flex;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 16px;
+            padding: 6px;
+            border: var(--border-glass);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn {
+            flex: 1;
+            text-align: center;
+            padding: 14px 20px;
+            cursor: pointer;
+            border-radius: 12px;
+            color: var(--color-mute);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .nav-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.2));
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.1);
+        }
+
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 30%;
+            width: 40%;
+            height: 2px;
+            background: var(--color-primary);
+            box-shadow: 0 0 10px var(--color-primary);
+        }
+
+        /* --- 4. Bento Grid 内容布局 --- */
+        .content-view {
+            display: none;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: minmax(180px, auto);
+            gap: 20px;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .content-view.active {
+            display: grid;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: var(--border-glass);
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(6, 182, 212, 0.3);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6);
+        }
+
+        .span-1 { grid-column: span 1; }
+        .span-2 { grid-column: span 2; }
+        .span-3 { grid-column: span 3; }
+        .span-4 { grid-column: span 4; }
+        .row-2 { grid-row: span 2; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title i { color: var(--color-primary); }
+
+        .chart-container {
+            flex: 1;
+            width: 100%;
+            min-height: 200px;
+        }
+
+        /* --- 5. 文本与微件样式 --- */
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: var(--color-mute); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .insight-box {
+            background: rgba(0,0,0,0.3);
+            border-left: 3px solid var(--color-secondary);
+            padding: 15px;
+            margin-top: auto;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .tag {
+            background: rgba(255,255,255,0.05);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--color-primary);
+            border: 1px solid rgba(6,182,212,0.2);
+        }
+
+        /* 动画定义 */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .content-view { grid-template-columns: 1fr; }
+            .span-1, .span-2, .span-3, .span-4 { grid-column: span 1; }
+            .nav-control { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-bg"></canvas>
+
+    <div class="dashboard-container">
+        
+        <header class="header-section">
+            <div class="header-title">
+                <h1>AdTech Evolution</h1>
+                <span class="role-tag">Commercialization Product Manager</span>
+            </div>
+            <div class="header-meta">
+                <div><i class="fas fa-clock"></i> 2025 Q1 Strategy Report</div>
+                <div style="color:var(--color-primary)">AI-Driven Monetization</div>
+            </div>
+        </header>
+
+        <div class="nav-control">
+            <div class="nav-btn active" onclick="switchTab('tab-traffic')">
+                <i class="fas fa-globe"></i> 流量重构 (Traffic)
+            </div>
+            <div class="nav-btn" onclick="switchTab('tab-creative')">
+                <i class="fas fa-wand-magic-sparkles"></i> 生产力革命 (Creative)
+            </div>
+            <div class="nav-btn" onclick="switchTab('tab-match')">
+                <i class="fas fa-microchip"></i> 匹配升维 (Targeting)
+            </div>
+            <div class="nav-btn" onclick="switchTab('tab-strategy')">
+                <i class="fas fa-chess-knight"></i> PM 策略 (Action)
+            </div>
+        </div>
+
+        <div id="tab-traffic" class="content-view active">
+            <div class="card span-2 row-2">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-filter"></i> 转化漏斗：从“流量”到“意图”</div>
+                </div>
+                <div id="chart-funnel" class="chart-container"></div>
+                <div class="insight-box">
+                    <strong>Shift:</strong> 传统漏斗是“曝光-点击-转化”。AI 时代（特别是对话式广告）漏斗变成了“意图识别-即时满足-推荐”。路径更短，但对<strong>相关性</strong>要求极高。
+                </div>
+            </div>
+
+            <div class="card span-1">
+                <div class="card-header">
+                    <div class="card-title">eCPM Uplift Potential</div>
+                </div>
+                <div id="chart-gauge" class="chart-container" style="height: 150px;"></div>
+                <div style="text-align: center; margin-top: 10px; color: var(--color-primary);">+35% by 2026</div>
+            </div>
+
+            <div class="card span-1">
+                <div class="card-header"><div class="card-title">Chat Ads CTR</div></div>
+                <div class="stat-value">8.5%</div>
+                <div class="stat-label">Avg. Industry Benchmark</div>
+                <p style="font-size:0.8rem; color:#64748b; margin-top:10px;">对比传统 Display 广告 (0.5%)，由于在上下文中植入，点击率呈指数级提升。</p>
+            </div>
+
+            <div class="card span-2">
+                <div class="card-header">
+                    <div class="card-title">广告库存形态变迁</div>
+                </div>
+                <div id="chart-inventory" class="chart-container"></div>
+            </div>
+        </div>
+
+        <div id="tab-creative" class="content-view">
+            <div class="card span-3 row-2">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-layer-group"></i> 动态创意优化 (DCO) 2.0</div>
+                </div>
+                <div style="display: flex; height: 100%; gap: 20px; align-items: center;">
+                    <div style="flex:1; text-align: center;">
+                        <i class="fas fa-user" style="font-size: 2rem; color: #fff;"></i>
+                        <p>User Persona</p>
+                        <div class="tag-cloud" style="justify-content: center;">
+                            <span class="tag">年轻女性</span><span class="tag">极简主义</span>
+                        </div>
+                    </div>
+                    <div style="color: var(--color-mute);"><i class="fas fa-arrow-right"></i></div>
+                    <div style="flex:2; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px dashed var(--color-secondary);">
+                        <div style="color: var(--color-secondary); font-size: 0.8rem; margin-bottom: 5px;">GEN AI ENGINE</div>
+                        <div style="font-family: monospace; font-size: 0.9rem; color: #ccc;">
+                            > Generating image...<br>
+                            > Style: Cyberpunk<br>
+                            > Copywriting: Persuasive<br>
+                            > Status: Done (0.8s)
+                        </div>
+                    </div>
+                    <div style="color: var(--color-mute);"><i class="fas fa-arrow-right"></i></div>
+                    <div style="flex:1; text-align: center;">
+                        <i class="fas fa-image" style="font-size: 2rem; color: var(--color-primary);"></i>
+                        <p>1000+ Variations</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card span-1">
+                <div class="card-header">
+                    <div class="card-title">素材生命周期</div>
+                </div>
+                <div class="stat-value">-60%</div>
+                <div class="stat-label">制作成本下降</div>
+            </div>
+
+            <div class="card span-1">
+                <div class="card-header">
+                    <div class="card-title">千人千面 (Real)</div>
+                </div>
+                <p style="color:var(--color-text); font-size: 0.9rem;">
+                    不仅仅是推荐不同的商品，而是<strong>生成</strong>不同的商品展示图。卖给户外爱好者显示山野背景，卖给白领显示办公室背景。
+                </p>
+            </div>
+        </div>
+
+        <div id="tab-match" class="content-view">
+            <div class="card span-2 row-2">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-project-diagram"></i> 技术栈升级：Matching & Bidding</div>
+                </div>
+                <div id="chart-tech-radar" class="chart-container"></div>
+            </div>
+
+            <div class="card span-2">
+                <div class="card-header">
+                    <div class="card-title">语义定向 (Semantic Targeting)</div>
+                </div>
+                <div style="display: flex; gap: 15px; margin-top: 10px;">
+                    <div style="flex: 1; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                        <strong style="color: #ef4444;">传统 DMP</strong>
+                        <p style="font-size: 0.85rem; color: #94a3b8;">
+                            Tags: [男, 25-30, 汽车]<br>
+                            Result: 粗颗粒度，容易误判。
+                        </p>
+                    </div>
+                    <div style="flex: 1; padding: 15px; background: rgba(6, 182, 212, 0.1); border-radius: 8px; border: 1px solid var(--color-primary);">
+                        <strong style="color: var(--color-primary);">AI Vector DB</strong>
+                        <p style="font-size: 0.85rem; color: #94a3b8;">
+                            Vector: [0.23, 0.91, -0.4...]<br>
+                            Result: 理解“我想找一辆适合周末露营且省油的车”。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card span-2">
+                <div class="card-header">
+                    <div class="card-title">pCVR (预估转化率) 革命</div>
+                </div>
+                <p style="font-size: 0.9rem; color: #cbd5e1;">
+                    利用 Transformer 模型处理用户的全生命周期序列行为 (Sequence Data)，捕捉长短期兴趣，将点击率预估误差降低至 <strong>2%</strong> 以内。
+                </p>
+            </div>
+        </div>
+
+        <div id="tab-strategy" class="content-view">
+            <div class="card span-4">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-road"></i> 商业化产品 Roadmap 2025</div>
+                </div>
+                <div id="chart-roadmap" class="chart-container" style="height: 300px;"></div>
+            </div>
+
+            <div class="card span-2">
+                <div class="card-header"><div class="card-title">新能力模型</div></div>
+                <ul style="padding-left: 20px; color: #cbd5e1; line-height: 1.8;">
+                    <li><strong>Prompt Engineering:</strong> 为广告主调优生成模型的 Prompt。</li>
+                    <li><strong>Data Privacy (隐私计算):</strong> 在不获取用户ID的情况下利用端侧 AI 进行定向。</li>
+                    <li><strong>Agent Design:</strong> 设计自动出价、自动诊断的智能体。</li>
+                </ul>
+            </div>
+
+            <div class="card span-2">
+                <div class="card-header"><div class="card-title">警惕“玩坏”体验</div></div>
+                <div class="insight-box" style="border-left-color: #ef4444; margin-top: 0;">
+                    <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                    AI 生成的垃圾广告（SEO Spam）可能会淹没平台。PM 必须建立“广告质量分 2.0”模型，不仅评估相关性，还要评估内容的真实性和美学价值。
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 全局变量 ---
+        let charts = {};
+
+        // --- 1. 图表初始化函数 ---
+
+        // Chart: Funnel (Tab 1)
+        function initFunnelChart() {
+            const chart = echarts.init(document.getElementById('chart-funnel'));
+            const option = {
+                color: ['#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef'],
+                tooltip: { trigger: 'item', formatter: "{b} : {c}%" },
+                series: [
+                    {
+                        name: 'AI Funnel',
+                        type: 'funnel',
+                        left: '10%', top: 10, bottom: 10, width: '80%',
+                        min: 0, max: 100,
+                        minSize: '30%', maxSize: '100%',
+                        sort: 'descending',
+                        gap: 2,
+                        label: { show: true, position: 'inside', color: '#fff', formatter: '{b}' },
+                        itemStyle: { borderColor: '#fff', borderWidth: 0 },
+                        data: [
+                            { value: 100, name: '意图识别 (Intent)' },
+                            { value: 60, name: '即时生成 (Generation)' },
+                            { value: 40, name: '交互对话 (Interaction)' },
+                            { value: 25, name: '交易闭环 (Action)' }
+                        ]
+                    }
+                ]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // Chart: Gauge (Tab 1)
+        function initGaugeChart() {
+            const chart = echarts.init(document.getElementById('chart-gauge'));
+            const option = {
+                series: [{
+                    type: 'gauge',
+                    startAngle: 180, endAngle: 0,
+                    min: 0, max: 100,
+                    splitNumber: 5,
+                    itemStyle: { color: '#f472b6', shadowColor: 'rgba(244,114,182,0.45)', shadowBlur: 10 },
+                    progress: { show: true, roundCap: true, width: 10 },
+                    pointer: { itemStyle: { color: '#f472b6' } },
+                    axisLine: { roundCap: true, lineStyle: { width: 10, color: [[1, 'rgba(255,255,255,0.1)']] } },
+                    axisTick: { show: false }, splitLine: { show: false }, axisLabel: { show: false },
+                    title: { show: false },
+                    detail: { backgroundColor: 'transparent', width: '60%', lineHeight: 40, height: 40, borderRadius: 8, offsetCenter: [0, '35%'], valueAnimation: true, formatter: function (value) { return value.toFixed(0) + '%'; }, color: '#fff' },
+                    data: [{ value: 78 }]
+                }]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // Chart: Inventory (Tab 1) - Stacked Bar
+        function initInventoryChart() {
+            const chart = echarts.init(document.getElementById('chart-inventory'));
+            const option = {
+                tooltip: { trigger: 'axis' },
+                legend: { textStyle: { color: '#ccc' }, bottom: 0 },
+                grid: { top: '10%', left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: ['2023', '2024', '2025', '2026'], axisLine: { lineStyle: { color: '#475569' } } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } } },
+                series: [
+                    { name: 'Banner/Static', type: 'bar', stack: 'total', data: [60, 40, 25, 15], itemStyle: { color: '#475569' } },
+                    { name: 'Short Video', type: 'bar', stack: 'total', data: [35, 45, 45, 35], itemStyle: { color: '#3b82f6' } },
+                    { name: 'AI Conversational', type: 'bar', stack: 'total', data: [5, 15, 30, 50], itemStyle: { color: '#06b6d4' } }
+                ]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // Chart: Tech Radar (Tab 3)
+        function initRadarChart() {
+            const chart = echarts.init(document.getElementById('chart-tech-radar'));
+            const option = {
+                radar: {
+                    indicator: [
+                        { name: '多模态理解', max: 100 },
+                        { name: '实时推理 (RTA)', max: 100 },
+                        { name: '序列化推荐', max: 100 },
+                        { name: '隐私计算', max: 100 },
+                        { name: '自动创意生成', max: 100 }
+                    ],
+                    axisName: { color: '#94a3b8' },
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
+                    splitArea: { show: false }
+                },
+                series: [{
+                    type: 'radar',
+                    data: [
+                        {
+                            value: [40, 60, 50, 30, 20],
+                            name: '传统 AdTech',
+                            itemStyle: { color: '#64748b' },
+                            areaStyle: { opacity: 0.1 }
+                        },
+                        {
+                            value: [90, 85, 95, 80, 95],
+                            name: 'AI-Native AdTech',
+                            itemStyle: { color: '#8b5cf6' },
+                            areaStyle: { color: new echarts.graphic.RadialGradient(0.5, 0.5, 1, [{ offset: 0, color: 'rgba(139,92,246,0.5)' }, { offset: 1, color: 'rgba(139,92,246,0)' }]) }
+                        }
+                    ]
+                }]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // Chart: Roadmap (Tab 4) - Gantt Style Custom
+        function initRoadmapChart() {
+            const chart = echarts.init(document.getElementById('chart-roadmap'));
+            const data = [
+                { name: '自动化创意工具 (AIGC Tool)', start: 0, duration: 3, color: '#06b6d4' },
+                { name: '对话式广告位 (Chat Ads)', start: 2, duration: 4, color: '#3b82f6' },
+                { name: 'Agent 自动投放系统', start: 4, duration: 5, color: '#8b5cf6' },
+                { name: '隐私计算沙箱', start: 1, duration: 8, color: '#64748b' }
+            ];
+            
+            // Custom render function for Gantt bars
+            const option = {
+                tooltip: {
+                    formatter: function (params) {
+                        return params.marker + params.name;
+                    }
+                },
+                grid: { left: '3%', right: '3%', bottom: '3%', top: '10%', containLabel: true },
+                xAxis: { 
+                    type: 'value', 
+                    min: 0, max: 10,
+                    axisLabel: { formatter: function(val) { return 'Q' + (val+1); } },
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }
+                },
+                yAxis: { 
+                    type: 'category', 
+                    data: data.map(i => i.name),
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisLabel: { color: '#fff' }
+                },
+                series: [
+                    {
+                        type: 'bar',
+                        stack: 'total',
+                        itemStyle: { color: 'transparent' },
+                        data: data.map(i => i.start)
+                    },
+                    {
+                        type: 'bar',
+                        stack: 'total',
+                        data: data.map(i => ({ value: i.duration, itemStyle: { color: i.color, borderRadius: 4 } }))
+                    }
+                ]
+            };
+            chart.setOption(option);
+            return chart;
+        }
+
+        // --- 2. 交互逻辑 ---
+        function switchTab(tabId) {
+            // UI Update
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.querySelectorAll('.content-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            const target = document.getElementById(tabId);
+            target.classList.add('active');
+
+            // Resize charts in the new tab
+            setTimeout(() => {
+                Object.values(charts).forEach(chart => chart.resize());
+            }, 50);
+        }
+
+        // --- 3. 背景动效 (Matrix Rain style but abstract) ---
+        function initMatrixBg() {
+            const canvas = document.getElementById('matrix-bg');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const drops = [];
+            const columns = canvas.width / 20;
+            for(let i=0; i<columns; i++) drops[i] = Math.random() * canvas.height;
+
+            function draw() {
+                ctx.fillStyle = 'rgba(2, 6, 23, 0.1)'; // Trail effect
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#0f3'; 
+                ctx.font = '15px monospace';
+
+                for(let i=0; i<drops.length; i++) {
+                    const text = Math.random() > 0.5 ? '1' : '0';
+                    const x = i * 20;
+                    const y = drops[i];
+                    
+                    // Gradient color based on height
+                    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    gradient.addColorStop(0, '#06b6d4');
+                    gradient.addColorStop(1, '#8b5cf6');
+                    ctx.fillStyle = gradient;
+
+                    ctx.fillText(text, x, y);
+
+                    if(y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i] += 20; // Speed
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        // --- 4. 初始化 ---
+        window.onload = function() {
+            initMatrixBg();
+            
+            // 初始化 Tab 1 图表
+            charts.funnel = initFunnelChart();
+            charts.gauge = initGaugeChart();
+            charts.inventory = initInventoryChart();
+            
+            // 预加载其他Tab图表 (Optional, but good for smoother switching)
+            charts.radar = initRadarChart();
+            charts.roadmap = initRoadmapChart();
+
+            window.addEventListener('resize', () => {
+                Object.values(charts).forEach(c => c.resize());
+                document.getElementById('matrix-bg').width = window.innerWidth;
+                document.getElementById('matrix-bg').height = window.innerHeight;
+            });
+        };
+
+    </script>
+</body>
+</html>
