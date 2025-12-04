@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>【你的产品名称】第一季度数据洞察</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --bg-page: #f0f9ff;
+            --bg-card: #ffffff;
+            --primary: #2563eb;
+            --primary-soft: #dbeafe;
+            --text-main: #111827;
+            --text-sub: #6b7280;
+            --border-soft: #e5e7eb;
+        }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                "Segoe UI", sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+        }
+
+        /* 顶部导航栏 */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: rgba(243, 244, 246, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .top-nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .top-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-title-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 30%, #93c5fd, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.35);
+        }
+
+        .top-title-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-title-text h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .top-title-text span {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+        }
+
+        .top-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* 页面主体布局 */
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 16px auto 32px;
+            padding: 0 24px 24px;
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin: 16px 0 24px;
+        }
+
+        .summary-card {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid var(--border-soft);
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .summary-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--text-sub);
+        }
+
+        .summary-main {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .summary-main span.value {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .summary-main span.unit {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+        }
+
+        .summary-trend {
+            font-size: 0.78rem;
+            color: #16a34a;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .summary-trend.down {
+            color: #dc2626;
+        }
+
+        /* 三大区块布局 */
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-soft);
+            padding: 18px 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        /* 用户增长卡片内的小 Tab 导航 */
+        .sub-tab-nav {
+            margin-top: 4px;
+            margin-bottom: 8px;
+            display: inline-flex;
+            gap: 6px;
+            padding: 4px;
+            border-radius: 999px;
+            background: #f3f4f6;
+        }
+
+        .sub-tab-btn {
+            border: none;
+            background: transparent;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .sub-tab-btn.active {
+            background: #ffffff;
+            color: #111827;
+            box-shadow: 0 0 0 1px #e5e7eb;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .section-title {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title h2 span.icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .section-title p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+        }
+
+        .section-badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #f9fafb;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+        }
+
+        /* 图表占位区域 */
+        .chart-placeholder {
+            position: relative;
+            margin-top: 4px;
+            border-radius: 12px;
+            border: 1px dashed #d1d5db;
+            background: radial-gradient(circle at top left, #f9fafb, #eef2ff);
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .chart-placeholder-inner {
+            position: absolute;
+            inset: 0;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .chart-placeholder-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-mini-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            margin-top: 8px;
+            height: 48px;
+        }
+
+        .chart-mini-bars span {
+            flex: 1;
+            border-radius: 999px;
+            background: linear-gradient(to top, #93c5fd, #2563eb);
+            opacity: 0.7;
+        }
+
+        .chart-mini-line {
+            margin-top: 8px;
+            height: 52px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.05));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-mini-line::before {
+            content: "";
+            position: absolute;
+            inset: 16px 8px 8px;
+            background-image: radial-gradient(circle at 0 100%, rgba(37, 99, 235, 0.4) 0, transparent 60%),
+                radial-gradient(circle at 40% 10%, rgba(99, 102, 241, 0.35) 0, transparent 55%),
+                radial-gradient(circle at 100% 60%, rgba(37, 99, 235, 0.4) 0, transparent 60%);
+            opacity: 0.9;
+        }
+
+        .chart-footer-note {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+        }
+
+        .chart-footer-note span.key {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .legend-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: #2563eb;
+        }
+
+        .chart-empty-tip {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            pointer-events: none;
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        /* 区块下方说明 */
+        .section-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 8px;
+            margin-top: 4px;
+            font-size: 0.78rem;
+            color: var(--text-sub);
+        }
+
+        .section-footer strong {
+            color: var(--primary);
+        }
+
+        .pill-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .pill {
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            font-size: 0.72rem;
+        }
+
+        /* 关键结论卡片 */
+        .key-insight-card {
+            margin-top: 10px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            font-size: 0.8rem;
+        }
+
+        .key-insight-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .key-insight-title i {
+            color: #f59e0b;
+        }
+
+        .key-insight-card ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .key-insight-card li {
+            margin: 4px 0;
+        }
+
+        /* 响应式 */
+        @media (max-width: 960px) {
+            .summary-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .top-nav-inner {
+                padding-inline: 16px;
+            }
+            .page-wrapper {
+                padding-inline: 16px;
+            }
+            .top-meta {
+                display: none;
+            }
+            .summary-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .pill {
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            font-size: 0.72rem;
+        }
+
+        /* 图表容器通用高度 */
+        .chart-box {
+            margin-top: 8px;
+            height: 240px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 960px) {
+            .summary-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+</head>
+    <!-- 初始化图表脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+                    // 1. 月度用户趋势折线图（可切换新增 / 活跃）
+        var growthDom = document.getElementById('chart-user-growth-trend');
+        var growthChart;
+        // 公共 X 轴月份
+        var growthMonths = ['1月', '2月', '3月', '4月', '5月', '6月'];
+        // 活跃用户（保持你原来的数据）
+        var growthActiveData = [12500, 18900, 21500, 24000, 27800, 31200];
+        // 示例：新增用户（示例值，可按你的真实数据替换）
+        var growthNewData = [5200, 7800, 9100, 10300, 11800, 13200];
+
+        if (growthDom) {
+            growthChart = echarts.init(growthDom);
+            var growthOption = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                grid: {
+                    left: '8%',
+                    right: '4%',
+                    top: '10%',
+                    bottom: '12%'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: growthMonths,
+                    boundaryGap: false,
+                    axisLine: { lineStyle: { color: '#9ca3af' } },
+                    axisLabel: { color: '#6b7280' }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    splitLine: {
+                        lineStyle: { color: '#e5e7eb' }
+                    },
+                    axisLabel: { color: '#6b7280' }
+                },
+                series: [
+                    {
+                        name: '活跃用户',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        itemStyle: {
+                            color: '#007bff'
+                        },
+                        lineStyle: {
+                            color: '#007bff',
+                            width: 2
+                        },
+                        areaStyle: {
+                            color: 'rgba(0, 123, 255, 0.08)'
+                        },
+                        data: growthActiveData
+                    }
+                ]
+            };
+            growthChart.setOption(growthOption);
+        }
+                // 指标下拉切换：新增用户 / 活跃用户
+                var metricSelect = document.getElementById('growth-metric-select');
+        if (metricSelect && growthChart) {
+            metricSelect.addEventListener('change', function () {
+                var value = this.value;
+                var data, seriesName;
+
+                if (value === 'new') {
+                    seriesName = '新增用户';
+                    data = growthNewData;
+                } else {
+                    seriesName = '活跃用户';
+                    data = growthActiveData;
+                }
+
+                growthChart.setOption({
+                    series: [
+                        {
+                            name: seriesName,
+                            data: data
+                        }
+                    ]
+                });
+            });
+        }
+
+        // 1.2 月活跃用户对比柱状图（本期 vs 去年同期示例）
+        var growthCompareDom = document.getElementById('chart-user-growth-compare');
+        var growthCompareChart;
+        if (growthCompareDom) {
+            growthCompareChart = echarts.init(growthCompareDom);
+
+            var compareNames = ['1月', '2月', '3月', '4月', '5月', '6月'];
+            // 示例：本期相对去年同期的差值，可按需替换为真实数据
+            var compareCurrent = [12500, 18900, 21500, 24000, 27800, 31200];
+            var compareLastYear = [9800, 15000, 17200, 19800, 22100, 26000];
+
+            var growthCompareOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' }
+                },
+                legend: {
+                    top: 4,
+                    right: 10,
+                    textStyle: { color: '#4b5563', fontSize: 11 }
+                },
+                grid: {
+                    left: '8%',
+                    right: '4%',
+                    top: 28,
+                    bottom: 20
+                },
+                xAxis: {
+                    type: 'category',
+                    data: compareNames,
+                    axisLine: { lineStyle: { color: '#9ca3af' } },
+                    axisLabel: { color: '#6b7280' }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    splitLine: { lineStyle: { color: '#e5e7eb' } },
+                    axisLabel: { color: '#6b7280' }
+                },
+                series: [
+                    {
+                        name: '本期',
+                        type: 'bar',
+                        barWidth: 12,
+                        itemStyle: {
+                            borderRadius: [4, 4, 0, 0],
+                            color: new echarts.graphic.LinearGradient(
+                                0, 1, 0, 0,
+                                [
+                                    { offset: 0, color: '#bfdbfe' },
+                                    { offset: 1, color: '#1d4ed8' }
+                                ]
+                            )
+                        },
+                        data: compareCurrent
+                    },
+                    {
+                        name: '去年同期',
+                        type: 'bar',
+                        barWidth: 12,
+                        itemStyle: {
+                            borderRadius: [4, 4, 0, 0],
+                            color: new echarts.graphic.LinearGradient(
+                                0, 1, 0, 0,
+                                [
+                                    { offset: 0, color: '#e5e7eb' },
+                                    { offset: 1, color: '#6b7280' }
+                                ]
+                            )
+                        },
+                        data: compareLastYear
+                    }
+                ]
+            };
+
+            growthCompareChart.setOption(growthCompareOption);
+        }
+
+            // 2. 用户渠道来源饼图
+            var channelDom = document.getElementById('chart-channel-source');
+            var channelChart;
+            if (channelDom) {
+                var channelChart = echarts.init(channelDom);
+                var channelOption = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{b}<br/>{c}%'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        right: '4%',
+                        top: 'center',
+                        textStyle: {
+                            color: '#4b5563',
+                            fontSize: 12
+                        }
+                    },
+                    color: ['#3b82f6', '#f97316', '#22c55e', '#a855f7'],
+                    series: [
+                        {
+                            name: '用户渠道来源',
+                            type: 'pie',
+                            radius: ['40%', '65%'],
+                            center: ['38%', '50%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                show: true,
+                                formatter: '{d}%',
+                                color: '#4b5563',
+                                fontSize: 11
+                            },
+                            labelLine: {
+                                length: 8,
+                                length2: 6
+                            },
+                            data: [
+                                { value: 35, name: '自然搜索 35%' },
+                                { value: 25, name: '直接访问 25%' },
+                                { value: 30, name: '社交媒体 30%' },
+                                { value: 10, name: '邮件营销 10%' }
+                            ]
+                        }
+                    ]
+                };
+                channelChart.setOption(channelOption);
+            }
+
+            // 3. 功能使用水平条形图
+            var featureDom = document.getElementById('chart-feature-usage');
+            var featureChart;
+            if (featureDom) {
+                featureChart = echarts.init(featureDom);
+
+                var featureNames = ['功能A', '功能B', '功能C', '功能D', '功能E'];
+                var featureValues = [78, 62, 54, 43, 31];
+
+                var featureOption = {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        formatter: '{b}<br/>使用率：{c}%'
+                    },
+                    grid: {
+                        left: '10%',
+                        right: '4%',
+                        top: '6%',
+                        bottom: '8%'
+                    },
+                    xAxis: {
+                        type: 'value',
+                        axisLine: { show: false },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#6b7280',
+                            formatter: '{value}%'
+                        }
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: featureNames,
+                        axisTick: { show: false },
+                        axisLine: { show: false },
+                        axisLabel: {
+                            color: '#4b5563'
+                        }
+                    },
+                    series: [
+                        {
+                            name: '功能使用率',
+                            type: 'bar',
+                            data: featureValues,
+                            barWidth: 14,
+                            itemStyle: {
+                                borderRadius: [6, 6, 6, 6],
+                                color: new echarts.graphic.LinearGradient(
+                                    1, 0, 0, 0,
+                                    [
+                                        { offset: 0, color: '#60a5fa' },  // 浅一点
+                                        { offset: 1, color: '#1d4ed8' }   // 深一点
+                                    ]
+                                )
+                            },
+                            label: {
+                                show: true,
+                                position: 'right',
+                                formatter: '{c}%',
+                                color: '#4b5563',
+                                fontSize: 11
+                            }
+                        }
+                    ]
+                };
+
+                featureChart.setOption(featureOption);
+            }
+
+        // 用户增长卡片内 Tab 切换逻辑
+        var subTabRoot = document.getElementById('user-growth-subtabs');
+        if (subTabRoot) {
+            var subButtons = subTabRoot.querySelectorAll('.sub-tab-btn');
+            var trendBox = document.getElementById('chart-user-growth-trend');
+            var compareBox = document.getElementById('chart-user-growth-compare');
+
+            subButtons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var target = btn.getAttribute('data-target');
+
+                    // 切换 active 样式
+                    subButtons.forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+
+                    // 根据 Tab 显示 / 隐藏图表容器
+                    if (target === 'trend' || target === 'forecast') {
+                        if (trendBox) trendBox.style.display = '';
+                        if (compareBox) compareBox.style.display = 'none';
+                        if (growthChart) growthChart.resize();
+                    } else if (target === 'compare') {
+                        if (trendBox) trendBox.style.display = 'none';
+                        if (compareBox) compareBox.style.display = '';
+                        if (growthCompareChart) growthCompareChart.resize();
+                    }
+                });
+            });
+        }
+
+
+        // 自适应窗口尺寸
+        window.addEventListener('resize', function () {
+            if (growthDom && growthChart) growthChart.resize();
+            if (growthCompareDom && growthCompareChart) growthCompareChart.resize();
+            if (channelDom && channelChart) channelChart.resize();
+            if (featureDom && featureChart) featureChart.resize();
+        });
+        });
+    </script>
+</body>
+</html>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="top-nav">
+        <div class="top-nav-inner">
+            <div class="top-title">
+                <div class="top-title-icon">
+                    <i class="fas fa-chart-line"></i>
+            </div>
+                <div class="top-title-text">
+                    <h1>【你的产品名称】第一季度数据洞察</h1>
+                    <span>Product Monthly Dashboard</span>
+            </div>
+            </div>
+            <div class="top-meta">
+                <span class="badge">2025 · 12 月</span>
+                <span><i class="far fa-clock"></i> 本月更新</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 页面主体 -->
+    <main class="page-wrapper">
+        <!-- 顶部关键指标摘要（可按需修改数值） -->
+        <section class="summary-row">
+            <article class="summary-card">
+                <div class="summary-label">活跃用户</div>
+                <div class="summary-main">
+                    <span class="value">1.28M</span>
+                    <span class="unit">MAU</span>
+                </div>
+                <div class="summary-trend">
+                    <i class="fas fa-arrow-up"></i> 环比 +12.3%
+                </div>
+            </article>
+
+            <article class="summary-card">
+                <div class="summary-label">本月收入</div>
+                <div class="summary-main">
+                    <span class="value">¥ 8.6M</span>
+                    <span class="unit">Revenue</span>
+                </div>
+                <div class="summary-trend">
+                    <i class="fas fa-arrow-up"></i> 环比 +9.1%
+            </div>
+            </article>
+
+            <article class="summary-card">
+                <div class="summary-label">功能使用频次</div>
+                <div class="summary-main">
+                    <span class="value">3.7</span>
+                    <span class="unit">次/人/日</span>
+                </div>
+                <div class="summary-trend down">
+                    <i class="fas fa-arrow-down"></i> 环比 -1.4%
+                </div>
+            </article>
+        </section>
+
+        <!-- 三大核心区块 -->
+        <section class="section-grid">
+            <!-- 用户增长 -->
+            <article class="section-card">
+                <header class="section-header">
+                    <div class="section-title">
+                        <h2>
+                            <span class="icon">
+                                <i class="fas fa-user-plus"></i>
+                            </span>
+                            用户增长
+                        </h2>
+                        <p>新注册 + 激活留存漏斗</p>
+                        </div>
+                    <span class="section-badge">Growth · 用户</span>
+                </header>
+
+                                <!-- 子 Tab 导航：趋势 / 对比 / 预测 -->
+                                <div class="sub-tab-nav" id="user-growth-subtabs">
+                                    <button class="sub-tab-btn active" data-target="trend">趋势</button>
+                                    <button class="sub-tab-btn" data-target="compare">对比</button>
+                                    <button class="sub-tab-btn" data-target="forecast">预测</button>
+                                </div>
+                
+                                <!-- 指标选择：新增用户 / 活跃用户 -->
+                                <div class="growth-toolbar">
+                                    <label for="growth-metric-select" style="font-size: 0.8rem; color: #6b7280;">
+                                        查看：
+                                        <select id="growth-metric-select" style="font-size: 0.8rem; padding: 2px 6px; border-radius: 999px; border: 1px solid #e5e7eb; background: #ffffff;">
+                                            <option value="active">活跃用户</option>
+                                            <option value="new">新增用户</option>
+                                        </select>
+                                    </label>
+                                </div>
+                
+                                <!-- 趋势：月活跃用户增长 折线图 -->
+                                <div id="chart-user-growth-trend" class="chart-box"></div>
+
+                <!-- 对比：准备柱状图用的第二个容器（初始隐藏） -->
+                <div id="chart-user-growth-compare" class="chart-box" style="display: none;"></div>
+
+                <footer class="section-footer">
+                    <span>本月新增用户 <strong>+186K</strong>，7 日留存保持在 <strong>41%</strong>。</span>
+                    <div class="pill-group">
+                        <span class="pill">渠道拆分</span>
+                        <span class="pill">激活转化</span>
+                    </div>
+                </footer>
+            </article>
+
+            <!-- 收入数据 -->
+            <article class="section-card">
+                <header class="section-header">
+                    <div class="section-title">
+                        <h2>
+                            <span class="icon">
+                                <i class="fas fa-yen-sign"></i>
+                            </span>
+                            收入数据
+                        </h2>
+                        <p>订阅 & 交易类收入构成</p>
+                    </div>
+                    <span class="section-badge">Monetization · 收入</span>
+                </header>
+
+                <!-- 用户渠道来源 饼图 -->
+                <div id="chart-channel-source" class="chart-box"></div>
+
+                <footer class="section-footer">
+                    <span>订阅收入占比 <strong>72%</strong>，ARPU 环比提升 <strong>+6%</strong>。</span>
+                    <div class="pill-group">
+                        <span class="pill">产品线</span>
+                        <span class="pill">区域拆分</span>
+                    </div>
+                </footer>
+            </article>
+
+            <!-- 功能使用 -->
+            <article class="section-card">
+                <header class="section-header">
+                    <div class="section-title">
+                        <h2>
+                            <span class="icon">
+                                <i class="fas fa-layer-group"></i>
+                            </span>
+                            功能使用
+                        </h2>
+                        <p>核心功能触达率与使用深度</p>
+                </div>
+                    <span class="section-badge">Engagement · 使用</span>
+                </header>
+
+                <!-- 图表占位 -->
+                <div class="chart-placeholder">
+                    <div class="chart-placeholder-inner">
+                        <div>
+                            <div class="chart-placeholder-header">
+                                <span>功能使用热度（占位图表）</span>
+                                <span>Feature Usage</span>
+                            </div>
+                            <div class="chart-mini-bars">
+                                <span style="height: 75%;"></span>
+                                <span style="height: 30%;"></span>
+                                <span style="height: 55%;"></span>
+                                <span style="height: 40%;"></span>
+                                <span style="height: 65%;"></span>
+                            </div>
+                        </div>
+                        <div class="chart-footer-note">
+                            <span class="key">
+                                <span class="legend-dot"></span> Top 功能点击/完成次数
+                            </span>
+                            <span>可展示热力图 / 条形图</span>
+                        </div>
+                    </div>
+                    <div class="chart-empty-tip">
+                        <i class="far fa-chart-bar"></i>
+                        <span>图表数据接入后展示</span>
+                    </div>
+                </div>
+                <!-- 功能使用水平条形图（真实图表） -->
+                <div id="chart-feature-usage" class="chart-box"></div>
+                <!-- 关键结论卡片 -->
+                <div class="key-insight-card">
+                    <div class="key-insight-title">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>关键结论</span>
+                    </div>
+                    <ul>
+                        <li>高频使用集中在少数核心功能，建议继续优化主路径体验，保持使用深度。</li>
+                        <li>部分长尾功能曝光较高但使用率偏低，可考虑收拢入口或与核心任务路径做组合包装。</li>
+                        <li>后续可结合行为路径和转化数据，识别从功能使用到业务结果之间的关键触点。</li>
+                    </ul>
+                </div>
+
+                <footer class="section-footer">
+                    <span>核心功能 Top3 覆盖率 <strong>89%</strong>，人均使用功能数 <strong>5.2 个</strong>。</span>
+                    <div class="pill-group">
+                        <span class="pill">漏斗分布</span>
+                        <span class="pill">行为路径</span>
+                </div>
+                </footer>
+            </article>
+        </section>
+    </main>
+</body>
+</html>
